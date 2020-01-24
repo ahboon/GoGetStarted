@@ -164,7 +164,63 @@ priceList = append(priceList,Car{1, "Sedan","Toyota"})
 ### Pointers
 A pointer is a memory address.
 A reference is a reference of a variable's memory address.
+
+Remember in structs we used 
+```go
+priceList = make([]*Car,0)
+```
+This is to create an array in which we the address or Car struct.
+It is kind of confusing....
+So lets make it easy:
+Use * only when creating a variable.
+Use & when you want to read/write value.
+For example:
+```go
+type Persons struct {
+    Name string
+    Age int
+}
+
+var tag *Persons
+query,err := db.Query("SELECT * FROM USERS")
+defer query.Close()
+if err != nil {
+    panic(err)
+}
+for query.Next() {
+    tag = &Persons{}
+    err = query.Scan(&tag.Name,&tag.Age)
+    if err != nil {
+        panic(err)
+    }   
+    fmt.Println(tag.Name,tag.Age)
+}
+```
+Conclusion: It is confusing. I, too do it using trial and error.
+
 ### Function
+To write a function, here is the syntax:
+```go
+
+func MyFirstFunct(var type, ...) (returnType, ...) {
+
+}
+
+```
+Arguments are written with variable name then type, like "name string", and return type can be either standrd types like string, int, bool, or the use of structs or interfaces. (This will be covered in 0x02)
 
 ### go 'commands'
+Finally, you wrote some code, but how do you run it?
+```bash
+# For running code
+go run main.go
 
+# For building the binary
+go build main.go
+
+# If you wrote test cases, you can run the following:
+# Make sure you run the command relative to where your code and test case codes are. This will not be covered in the workshop, but a test case will be provided for you to try it out.
+go test .
+```
+
+Now you got started, ready to Go to School? 0x02
