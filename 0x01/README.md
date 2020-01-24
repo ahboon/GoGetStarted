@@ -134,7 +134,7 @@ type CarPriceList struct {
 }
 ```
 
-Using structs?
+Example of storing variables
 ```go
 type Car struct {
     Price int
@@ -144,7 +144,7 @@ type Car struct {
 
 fmt.Println(Car{100, "Sedan","BMW"})
 ```
-Can we nest structs? YES WE CAN
+
 ```go
 type Car struct {
     Price int
