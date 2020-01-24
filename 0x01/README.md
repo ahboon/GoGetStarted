@@ -134,6 +134,32 @@ type CarPriceList struct {
 }
 ```
 
+Using structs?
+```go
+type Car struct {
+    Price int
+    Type string
+    Brand string
+}
+
+fmt.Println(Car{100, "Sedan","BMW"})
+```
+Can we nest structs? YES WE CAN
+```go
+type Car struct {
+    Price int
+    Type string
+    Brand string
+    }
+
+type CarPriceList struct {
+    Pricelist []Car
+}
+
+priceList = make([]*Car,0)
+priceList = append(priceList,Car{100, "Sedan","BMW"})
+priceList = append(priceList,Car{1, "Sedan","Toyota"})
+```
 
 ### Pointers
 
