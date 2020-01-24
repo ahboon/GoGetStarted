@@ -110,6 +110,30 @@ fmt.Println(sum)
 ```
 
 ### Structs
+For those who have learnt C/C++, this would be similar to your structs.
+A struct is a collection of fields. (https://tour.golang.org/moretypes/2)
+What if you have a requirement where you need to store multiple data types as an entity? 
+For example, you would like to store an entity of a car where price, type, and brand is in. You are not going to have all three variables right? What if I told you struct saves the day!?
+```go
+type Car struct {
+    Price int
+    Type string
+    Brand string
+}
+```
+Can we nest structs? YES WE CAN
+```go
+type Car struct {
+    Price int
+    Type string
+    Brand string
+}
+
+type CarPriceList struct {
+    Pricelist []Car
+}
+```
+
 
 ### Pointers
 
