@@ -223,4 +223,4 @@ go build main.go
 go test .
 ```
 
-Now you got started, ready to Go to School? 0x02
+Now you got started, ready to  Go Get Good? 0x02
