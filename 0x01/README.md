@@ -162,7 +162,8 @@ priceList = append(priceList,Car{1, "Sedan","Toyota"})
 ```
 
 ### Pointers
-
+A pointer is a memory address.
+A reference is a reference of a variable's memory address.
 ### Function
 
 ### go 'commands'
