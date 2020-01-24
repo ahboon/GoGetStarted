@@ -40,16 +40,78 @@ x = 1
 ```
 shorthand 
 ```go
-x := 1
+y := 2
 ```
+Full Example: https://play.golang.org/p/_JfDN-J9qrd
 
 ### Slice (Arrays)
+The slice type is an abstraction built on top of Go's array type, and so to understand slices we must first understand arrays.
+
+An array type definition specifies a length and an element type. For example, the type [4]int represents an array of four integers. An array's size is fixed; its length is part of its type ([4]int and [5]int are distinct, incompatible types). Arrays can be indexed in the usual way, so the expression s[n] accesses the nth element, starting from zero. (https://blog.golang.org/go-slices-usage-and-internals)
+
+To initilize:
+```go
+var a [4]int
+a[0] = 1
+i := a[0]
+// i == 1
+```
+Another way to make an array of a type:
+```go
+studentNameArray = make([]string,0) //Returns a slice of studentNameArray with type string with an initial length of zero but NO LIMIT TO CAPACITY
+anotherStudentNameArray = make([]string,0,10) //Returns a slice of studentNameArray with type string with an initial length of zero and a capacity of 10 elements
+// Docuemntation https://golang.org/pkg/builtin/#make
+```
+### For Loops
+There are only FOR loops in Go. So what do we do?
+There are many ways of using the for keyword. You can use it to do iterations, or conditional interations. Sounds familiar? You may be doing a O(n) loop or a O(nlogn) loop. But the key idea to remember here is that you are not restricted by the traditional "3 variable" loop. (initializer, condition, counter). Let's take a look at the different types of loops.
+
+```go
+// Your typical for loop with the 3 variables needed in the condition statements
+sum := 0
+for i := 1; i < 5; i++ {
+    sum += i
+}
+fmt.Println(sum)
+//----------------------------
+
+// An emulation of while loop using for keyword
+n := 1
+for n < 5 {
+    n *= 2
+}
+fmt.Println(n)
+//----------------------------
+
+// Endless Loop
+sum := 0
+for {
+    sum++ // repeated forever
+}
+fmt.Println(sum)
+//----------------------------
+
+// This is similar to foreach loop, i will give index, while s will give value.
+strings := []string{"hello", "world"}
+for i, s := range strings {
+    fmt.Println(i, s)
+}
+//----------------------------
+
+// A loop with loop conditions
+sum := 0
+for i := 1; i < 5; i++ {
+    if i%2 != 0 { // skip odd numbers
+        continue
+    }
+    sum += i
+}
+fmt.Println(sum)
+```
 
 ### Structs
 
 ### Pointers
-
-### For Loops
 
 ### Function
 
