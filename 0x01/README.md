@@ -254,4 +254,4 @@ go build main.go
 go test .
 ```
 
-Now you got started, ready to  Go Get Good? 0x02
+Now you got started, ready to  Go Get Good? 0x02 [url:https://github.com/ahboon/GoGetStarted/tree/master/0x02]
