@@ -23,3 +23,20 @@ func ReturnCrazy() map[string]interface{} {
     return output
 }
 ```
+
+Now can you use the above example and return the following?
+
+Use the following slice:
+
+```go
+albums := []string{"Taylor Swift", "Fearless", "Speak Now", "Red", "1989", "Reputation", "Lover"}
+sales := []string{"100","200","300","400","500","600","700"}
+```
+
+And the output should look like this:
+{
+    "Taylor Swift":"100",
+    ..
+    ..
+    "Lover":"700"
+}
