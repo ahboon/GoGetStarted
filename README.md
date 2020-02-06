@@ -10,5 +10,4 @@ Lesson created for sharing with fellow coursemates.
 - How to create a simple GoLang REST service
 
 ## 0x03 - Go Crazy
-- Integrating with frontend
 - Possible Applications
