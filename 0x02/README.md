@@ -79,6 +79,7 @@ func GetString() string{
 ```
 
 ### JSON reply
+Notice that your previous codes are not replying in JSON? 
 Time to include structs!
 
 Your data.go should look like this
@@ -123,3 +124,6 @@ func ServeService() http.Handler {
 	return router
 }
 ```
+
+
+### Now lets give it inputs
