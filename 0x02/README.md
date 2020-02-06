@@ -556,3 +556,7 @@ func ByeString(name string) *MyFirstStruct{
     return tag
 }
 ```
+
+
+Ready to have one last fun?
+0x03 -> https://github.com/ahboon/GoGetStarted/tree/master/0x03
