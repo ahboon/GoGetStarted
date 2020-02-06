@@ -194,7 +194,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
     } 
     name,_ := r.URL.Query()["name"]
     if name == "" {
-        		w.WriteHeader(http.StatusBadRequest)
+        w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
 		return
     }
@@ -235,7 +235,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
     } 
     name,_ := r.URL.Query()["name"]
     if name[0] == "" {
-        		w.WriteHeader(http.StatusBadRequest)
+        w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
 		return
     }
@@ -307,7 +307,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
     } 
     age,_ := r.URL.Query()["age"]
     if age[0] == "" {
-        		w.WriteHeader(http.StatusBadRequest)
+        w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(ErrorMessage{Error: "age is missing."})
 		return
     }
@@ -343,5 +343,177 @@ func GetString(name string,age string) *MyFirstStruct{
     tag.Name = name
     tag.Age = intAge
     return tag
+}
+```
+
+Now lets try sending a JSON request!
+
+Previously, we used URL variables and it can be done by doing a simple GET request. However, to send request bodies, we need to use POST request. (NOTE: It is still possible to read from the URL variables when sending a POST request. So you can sort of combine both of them. For the sake of this class, we will be using the previous code by adding on a POST request.)
+
+We will be creating a new route for a POST request, and it will have a new function.
+
+No change to main.go
+
+Your logic.go should look like this:
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gorilla/mux"
+    "encoding/json"
+)
+
+type ErrorMessage struct {
+	Error string `json:"error"`
+}
+
+type GoodBye struct {
+    Name string `json:"name"`
+}
+
+func HelloWorld(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    if r.URL.Query()["name"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    } 
+    name,_ := r.URL.Query()["name"]
+    if name[0] == "" {
+        		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    }
+    if r.URL.Query()["age"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "age is missing."})
+		return
+    } 
+    age,_ := r.URL.Query()["age"]
+    if age[0] == "" {
+        w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "age is missing."})
+		return
+    }
+    output := GetString(name[0],age[0])
+    json.NewEncoder(w).Encode(output)
+}
+
+func ByeWorld(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    var inputVar GoodBye
+    _ = json.NewDecoder(r.Body).Decode(&inputVar)
+    output := ByeString(inputVar.Name)
+    json.NewEncoder(w).Encode(output)
+}
+
+func ServeService() http.Handler {
+
+	router := mux.NewRouter()
+    router.HandleFunc("/helloworld", HelloWorld).Methods("GET", "OPTIONS")
+    router.HandleFunc("/byeworld", ByeWorld).Methods("POST", "OPTIONS")
+	return router
+}
+```
+
+Your data.go should look like this
+```go
+package main
+
+import (
+    "strconv"
+)
+
+type MyFirstStruct struct {
+    Name string `json:"name"`
+    Age int `json:"age"`
+}
+
+func GetString(name string,age string) *MyFirstStruct{
+    intAge,_ := strconv.Atoi(age)
+    var tag *MyFirstStruct
+    tag = &MyFirstStruct{}
+    tag.Name = name
+    tag.Age = intAge
+    return tag
+}
+
+func ByeString(name string) *MyFirstStruct{
+    var tag *MyFirstStruct
+    tag = &MyFirstStruct{}
+    tag.Name = name
+    tag.Age = 999
+    return tag
+}
+```
+
+You can try some input validation by using nil as well:
+
+logic.go
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gorilla/mux"
+    "encoding/json"
+)
+
+type ErrorMessage struct {
+	Error string `json:"error"`
+}
+
+type GoodBye struct {
+    Name string `json:"name"`
+}
+
+func HelloWorld(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    if r.URL.Query()["name"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    } 
+    name,_ := r.URL.Query()["name"]
+    if name[0] == "" {
+        		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    }
+    if r.URL.Query()["age"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "age is missing."})
+		return
+    } 
+    age,_ := r.URL.Query()["age"]
+    if age[0] == "" {
+        w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "age is missing."})
+		return
+    }
+    output := GetString(name[0],age[0])
+    json.NewEncoder(w).Encode(output)
+}
+
+func ByeWorld(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    var inputVar GoodBye
+    _ = json.NewDecoder(r.Body).Decode(&inputVar)
+    if inputVar.Name == ""{
+        w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "Service requires name in JSON"})
+		return
+    }
+    output := ByeString(inputVar.Name)
+    json.NewEncoder(w).Encode(output)
+}
+
+func ServeService() http.Handler {
+
+	router := mux.NewRouter()
+    router.HandleFunc("/helloworld", HelloWorld).Methods("GET", "OPTIONS")
+    router.HandleFunc("/byeworld", ByeWorld).Methods("POST", "OPTIONS")
+	return router
 }
 ```
