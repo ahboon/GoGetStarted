@@ -62,6 +62,37 @@ studentNameArray = make([]string,0) //Returns a slice of studentNameArray with t
 anotherStudentNameArray = make([]string,0,10) //Returns a slice of studentNameArray with type string with an initial length of zero and a capacity of 10 elements
 // Docuemntation https://golang.org/pkg/builtin/#make
 ```
+
+### IF ELSE ?!?!?!?!?!?
+Like any programming language, IF ELSE must exist.
+```go
+    if CONDITION {
+
+    } else if CONDITION {
+
+    } else {
+
+    }
+```
+Example:
+```go
+    x := true
+	if x {
+		fmt.Println(x)
+    } else if x {
+        // Else if something
+    } else {
+        // Something else
+    }
+```
+You can do initialiation inside the statements too!
+```go
+	if x := 100; x == 100 {
+		fmt.Println("Runaway Car")
+	}
+```
+
+
 ### For Loops
 There are only FOR loops in Go. So what do we do?
 There are many ways of using the for keyword. You can use it to do iterations, or conditional interations. Sounds familiar? You may be doing a O(n) loop or a O(nlogn) loop. But the key idea to remember here is that you are not restricted by the traditional "3 variable" loop. (initializer, condition, counter). Let's take a look at the different types of loops.
