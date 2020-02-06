@@ -92,7 +92,7 @@ type MyFirstStruct struct {
     Age int `json:"age"`
 }
 
-func GetString() MyFirstStruct{
+func GetString() *MyFirstStruct{
     var tag *MyFirstStruct
     tag = &MyFirstStruct{}
     tag.Name = "Michael Tan You Zhuang"
@@ -127,3 +127,221 @@ func ServeService() http.Handler {
 
 
 ### Now lets give it inputs
+Now lets try providing inputs. First, URL variables.
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gorilla/mux"
+    "encoding/json"
+)
+
+type ErrorMessage struct {
+	Error string `json:"error"`
+}
+
+func HelloWorld(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    if r.URL.Query()["name"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+	} 
+    output := GetString()
+    json.NewEncoder(w).Encode(output)
+}
+
+func ServeService() http.Handler {
+
+	router := mux.NewRouter()
+	router.HandleFunc("/helloworld", HelloWorld).Methods("GET", "OPTIONS")
+	return router
+}
+```
+
+Explaination:
+```go
+    if r.URL.Query()["name"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+	} 
+```
+The if statement checks if the url variable "name" was given. So if the url was http://localhost:8000/helloworld, it would throw an error with the status code of Bad Request.
+This is a way of error handling in Go. Because go does not have try catch, it uses nil if it does not exists.
+
+Now lets read the variable.
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gorilla/mux"
+    "encoding/json"
+)
+
+type ErrorMessage struct {
+	Error string `json:"error"`
+}
+
+func HelloWorld(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    if r.URL.Query()["name"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    } 
+    name,_ := r.URL.Query()["name"]
+    if name == "" {
+        		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    }
+    output := GetString()
+    json.NewEncoder(w).Encode(output)
+}
+
+func ServeService() http.Handler {
+
+	router := mux.NewRouter()
+	router.HandleFunc("/helloworld", HelloWorld).Methods("GET", "OPTIONS")
+	return router
+}
+```
+Yet again, we are checking if the variable name is empty. Because http://localhost:8000/helloworld?name would pass the check for name, but we want to ensure that the value contains something. So we check if it is empty.
+
+
+Now, now we need to pass it into the GetSting() function. Note that r.URL.Query()["name"] returns a slice of variables. So it is possible to have multiple "name" passed in and it reads as a slice. ``http://localhost:8000/helloworld?name=terry&name=bob -> Example of an array passed in``
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gorilla/mux"
+    "encoding/json"
+)
+
+type ErrorMessage struct {
+	Error string `json:"error"`
+}
+
+func HelloWorld(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    if r.URL.Query()["name"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    } 
+    name,_ := r.URL.Query()["name"]
+    if name[0] == "" {
+        		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    }
+    output := GetString(name[0])
+    json.NewEncoder(w).Encode(output)
+}
+
+func ServeService() http.Handler {
+
+	router := mux.NewRouter()
+	router.HandleFunc("/helloworld", HelloWorld).Methods("GET", "OPTIONS")
+	return router
+}
+```
+We also need to change data.go to handle the new variable.
+
+Your data.go should look like this
+```go
+package main
+
+
+type MyFirstStruct struct {
+    Name string `json:"name"`
+    Age int `json:"age"`
+}
+
+func GetString(name string) *MyFirstStruct{
+    var tag *MyFirstStruct
+    tag = &MyFirstStruct{}
+    tag.Name = name
+    tag.Age = 25
+    return tag
+}
+```
+
+Now lets pass in age as well.
+
+Your logic.go
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gorilla/mux"
+    "encoding/json"
+)
+
+type ErrorMessage struct {
+	Error string `json:"error"`
+}
+
+func HelloWorld(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    if r.URL.Query()["name"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    } 
+    name,_ := r.URL.Query()["name"]
+    if name[0] == "" {
+        		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "name is missing."})
+		return
+    }
+    if r.URL.Query()["age"] == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "age is missing."})
+		return
+    } 
+    age,_ := r.URL.Query()["age"]
+    if age[0] == "" {
+        		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorMessage{Error: "age is missing."})
+		return
+    }
+    output := GetString(name[0],age[0])
+    json.NewEncoder(w).Encode(output)
+}
+
+func ServeService() http.Handler {
+
+	router := mux.NewRouter()
+	router.HandleFunc("/helloworld", HelloWorld).Methods("GET", "OPTIONS")
+	return router
+}
+```
+
+Your data.go
+```go
+package main
+
+import (
+    "strconv"
+)
+
+type MyFirstStruct struct {
+    Name string `json:"name"`
+    Age int `json:"age"`
+}
+
+func GetString(name string,age string) *MyFirstStruct{
+    intAge,_ := strconv.Atoi(age)
+    var tag *MyFirstStruct
+    tag = &MyFirstStruct{}
+    tag.Name = name
+    tag.Age = intAge
+    return tag
+}
+```
